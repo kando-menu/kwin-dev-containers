@@ -7,6 +7,9 @@ jobs:
   build:
     name: Deploy Containers
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     strategy:
       matrix:
         ubuntu_version: ["22.04", "24.04", "25.10", "26.04"]
