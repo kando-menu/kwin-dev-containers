@@ -12,7 +12,7 @@ jobs:
       packages: write
     strategy:
       matrix:
-        version: ["25.04", "25.10", "26.04"]
+        version: ["24.10", "25.04", "25.10", "26.04"]
         architecture: [ubuntu-latest, ubuntu-latest-arm]
     steps:
       - uses: docker/setup-buildx-action@v4.1.0
