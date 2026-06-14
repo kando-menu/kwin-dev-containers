@@ -13,6 +13,7 @@ RUN dnf install -y \
         extra-cmake-modules \
         kwin-devel \
         libdrm-devel \
+        libepoxy-devel \
         wayland-devel \
         libxkbcommon-devel \
         libxcb-devel \
