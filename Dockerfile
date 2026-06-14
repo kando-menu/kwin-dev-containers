@@ -4,5 +4,13 @@ FROM ubuntu:${ubuntu_version}
 
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && \
-    apt-get install -y build-essential cmake extra-cmake-modules kwin-dev qt6-base-dev && \
+    apt-get install -y \
+        build-essential \
+        cmake \
+        ninja-build \
+        pkg-config \
+        git \
+        extra-cmake-modules \
+        kwin-dev \
+        qt6-base-dev && \
     rm -rf /var/lib/apt/lists/*
