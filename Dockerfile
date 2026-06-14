@@ -12,5 +12,12 @@ RUN apt-get update && \
         git \
         extra-cmake-modules \
         kwin-dev \
+        libdrm-dev \
+        libwayland-dev \
+        libxkbcommon-dev \
+        libxcb1-dev \
+        libxcb-util-dev \
+        libgl1-mesa-dev \
+        libinput-dev \
         qt6-base-dev && \
     rm -rf /var/lib/apt/lists/*
