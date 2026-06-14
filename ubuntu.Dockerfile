@@ -1,6 +1,6 @@
-# Ubuntu version (e.g. 22.04, 23.04, ...) can be passed using --build-arg=ubuntu_version=...
-ARG ubuntu_version=latest
-FROM ubuntu:${ubuntu_version}
+# Ubuntu version (e.g. 22.04, 23.04, ...) can be passed using --build-arg=version=...
+ARG version=latest
+FROM ubuntu:${version}
 
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && \
