@@ -1,0 +1,30 @@
+on:
+  push:
+    tags:
+      - "**"
+
+jobs:
+  build:
+    name: Deploy Containers
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        ubuntu_version: ["22.04", "24.04", "25.10", "26.04"]
+    steps:
+      - uses: docker/setup-buildx-action@v4.1.0
+      - uses: docker/login-action@4.2.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - id: docker_meta
+        uses: docker/metadata-action@v6.1.0
+        with:
+          images: ghcr.io/${{ github.repository }}-${{ matrix.ubuntu_version }}
+
+      - uses: docker/build-push-action@v7.2.0
+        with:
+          build-args: ubuntu_version=${{ matrix.ubuntu_version }}
+          tags: ${{ steps.docker_meta.outputs.tags }}
+          push: true
