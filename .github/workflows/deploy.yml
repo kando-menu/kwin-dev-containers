@@ -5,8 +5,58 @@ on:
 
 jobs:
   build:
-    name: Deploy Containers
-    runs-on: ${{ matrix.architecture }}
+    name: Build ${{ matrix.target.distro }}-${{ matrix.target.version }} (${{ matrix.arch.suffix }})
+    runs-on: ${{ matrix.arch.runner }}
+    permissions:
+      contents: read
+      packages: write
+    strategy:
+      fail-fast: false
+      matrix:
+        target:
+          - distro: ubuntu
+            version: "25.04"
+          - distro: ubuntu
+            version: "25.10"
+          - distro: ubuntu
+            version: "26.04"
+          - distro: fedora
+            version: "40"
+          - distro: fedora
+            version: "41"
+          - distro: fedora
+            version: "42"
+          - distro: fedora
+            version: "43"
+          - distro: fedora
+            version: "44"
+        arch:
+          - runner: ubuntu-26.04
+            platform: linux/amd64
+            suffix: amd64
+          - runner: ubuntu-26.04-arm
+            platform: linux/arm64
+            suffix: arm64
+    steps:
+      - uses: docker/setup-buildx-action@v4.1.0
+      - uses: docker/login-action@v4.2.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: docker/build-push-action@v7.2.0
+        with:
+          file: ${{ matrix.target.distro }}.Dockerfile
+          build-args: version=${{ matrix.target.version }}
+          platforms: ${{ matrix.arch.platform }}
+          tags: ghcr.io/${{ github.repository }}-${{ matrix.target.distro }}-${{ matrix.target.version }}:${{ github.ref_name }}-${{ matrix.arch.suffix }}
+          push: true
+
+  merge:
+    name: Merge ${{ matrix.target.distro }}-${{ matrix.target.version }} manifest
+    runs-on: ubuntu-26.04
+    needs: build
     permissions:
       contents: read
       packages: write
@@ -29,7 +79,6 @@ jobs:
             version: "43"
           - distro: fedora
             version: "44"
-        architecture: [ubuntu-26.04, ubuntu-26.04-arm]
     steps:
       - uses: docker/setup-buildx-action@v4.1.0
       - uses: docker/login-action@v4.2.0
@@ -38,14 +87,12 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - id: docker_meta
-        uses: docker/metadata-action@v6.1.0
-        with:
-          images: ghcr.io/${{ github.repository }}-${{ matrix.target.distro }}-${{ matrix.target.version }}
-
-      - uses: docker/build-push-action@v7.2.0
-        with:
-          file: ${{ matrix.target.distro }}.Dockerfile
-          build-args: version=${{ matrix.target.version }}
-          tags: ${{ steps.docker_meta.outputs.tags }}
-          push: true
+      - name: Create multi-arch manifest
+        env:
+          IMAGE: ghcr.io/${{ github.repository }}-${{ matrix.target.distro }}-${{ matrix.target.version }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          docker buildx imagetools create \
+            -t "$IMAGE:$TAG" \
+            "$IMAGE:$TAG-amd64" \
+            "$IMAGE:$TAG-arm64"
