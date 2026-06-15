@@ -51,6 +51,8 @@ jobs:
           build-args: version=${{ matrix.target.version }}
           platforms: ${{ matrix.arch.platform }}
           tags: ghcr.io/${{ github.repository }}-${{ matrix.target.distro }}-${{ matrix.target.version }}:${{ github.ref_name }}-${{ matrix.arch.suffix }}
+          provenance: false
+          sbom: false
           push: true
 
   merge:
@@ -94,5 +96,6 @@ jobs:
         run: |
           docker buildx imagetools create \
             -t "$IMAGE:$TAG" \
+            -t "$IMAGE:latest" \
             "$IMAGE:$TAG-amd64" \
             "$IMAGE:$TAG-arm64"
