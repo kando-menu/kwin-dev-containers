@@ -1,5 +1,11 @@
 # Changelog of Kando's KWin Dev-Containers
 
+## [1.2.2](https://github.com/kando-menu/kwin-dev-containers/releases/tag/1.2.2)
+
+**Release Date:** 2026-09-25
+
+- Rebuilt all container images to include the latest updates and security patches.
+
 ## [1.2.1](https://github.com/kando-menu/kwin-dev-containers/releases/tag/1.2.1)
 
 **Release Date:** 2026-08-07
